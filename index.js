@@ -31,32 +31,32 @@ function *index(){
     this.body = yield render('index',data)
 }
 
-function *resetImg(number){
+function *resetImg(num){
     this.type =  'image/jpg';
     let inputW,inputH;
 
-    if(/\d[x]\d/.test(number)){
-        inputW = number.split('x')[0];
-        inputH = number.split('x')[1];
+    if(/\d[x]\d/.test(num)){
+        inputW = num.split('x')[0];
+        inputH = num.split('x')[1];
         this.body = gm(randomImg()).resize(inputW,inputH,'!').stream();
-    }else if(/^\d+$/.test(number)){
-        this.body = gm(randomImg()).resize(number).stream();
+    }else if(/^\d+$/.test(num)){
+        this.body = gm(randomImg()).resize(num).stream();
     }else{
         this.throw('Must be number,like [300x200] or [500]', 404);
     }
 
 }
 
-function *resetImgRandom(number){
+function *resetImgRandom(num){
     this.type =  'image/jpg';
     let inputW,inputH;
 
-    if(/\d[x]\d/.test(number)){
-        inputW = number.split('x')[0];
-        inputH = number.split('x')[1];
+    if(/\d[x]\d/.test(num)){
+        inputW = num.split('x')[0];
+        inputH = num.split('x')[1];
         this.body = gm(randomImg()).resize(randomNum(inputW),randomNum(inputH),'!').stream();
-    }else if(/^\d+$/.test(number)){
-        this.body = gm(randomImg()).resize(randomNum(number)).stream();
+    }else if(/^\d+$/.test(num)){
+        this.body = gm(randomImg()).resize(randomNum(num)).stream();
     }else{
         this.throw('Must be number,like [300x200] or [500]', 404);
     }
@@ -66,5 +66,5 @@ function *resetImgRandom(number){
 //router
 
 app.use(route.get('/',index));
-app.use(route.get('/:number',resetImg));
-app.use(route.get('/r/:number',resetImgRandom));
+app.use(route.get('/:num',resetImg));
+app.use(route.get('/r/:num',resetImgRandom));
