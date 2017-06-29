@@ -14,7 +14,7 @@ console.log('listening 2333');
 app.use(serve(__dirname +'/src'));
 
 let render = views(__dirname + '/page',{
-    map: {html:'mustache'}
+    map: {html:'ejs'}
 });
 
 
@@ -38,7 +38,12 @@ function *resetImg(num){
     if(/\d[x]\d/.test(num)){
         inputW = num.split('x')[0];
         inputH = num.split('x')[1];
-        this.body = gm(randomImg()).resize(inputW,inputH,'!').stream();
+        if(Number(inputW) > Number(inputH)){
+            this.body = gm(randomImg()).resize(inputW).crop(inputW,inputH).stream();
+        }else {
+            this.body = gm(randomImg()).resize(null,inputH).crop(inputW,inputH).stream();
+        }
+
     }else if(/^\d+$/.test(num)){
         this.body = gm(randomImg()).resize(num).stream();
     }else{
@@ -48,6 +53,16 @@ function *resetImg(num){
 }
 
 function *resetImgRandom(num){
+    //console.log(11111)
+    this.set({
+        'Expires': 'Thu, 20 Jun 2017 02:31:31 GMT',
+        'Last-Modified': 'Thu, 20 Jun 2017 02:31:31 GMT',
+        'Cache-Control': 'no-cache'
+    });
+    //if(JSON.stringify(this.query) === '{}'){
+    //    this.redirect(this.url+'?'+ Date.now())
+    //}
+
     this.type =  'image/jpg';
     let inputW,inputH;
 

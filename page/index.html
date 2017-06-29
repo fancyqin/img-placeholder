@@ -4,13 +4,105 @@
         <title></title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet">
+        <style type="text/css">
+            .wrap{
+                font-family: 'Exo 2', sans-serif;
+                padding: 10px;
+            }
+            .wrap h1{
+                font-size: 36px;
+                margin: 20px 0;
+                text-align: center;
+                text-transform: uppercase;
+            }
+            .wrap .op{
+                float: left;
+                width: 330px;
+            }
+            .wrap .view{
+                overflow: hidden;
+                margin-left:350px;
+            }
+            .wrap .box{
+                text-align: center;
+            }
+            .wrap .item{
+                text-align: left;
+                width: 300px;
+                margin: 0 auto 20px;
+            }
+            .wrap .half{
+                display: inline-block;
+                width: 150px;
+            }
+            .wrap .item label{
+                display: block;
+                margin-bottom: 5px;
+                color: #555;
+            }
+            .wrap .item input[type='text'],.wrap .item input[type='number']{
+                box-sizing: border-box;
+                width: 100%;
+                padding: 5px;
+                font-size: 16px;
+                border-radius: 2px;
+                border:1px solid #ccc;
+            }
+        </style>
+        <script src="https://unpkg.com/vue/dist/vue.js"></script>
     </head>
     <body>
-        <h1 class="">IMG PLACEHOLDER</h1>
-        <div class="">
-            <input type="text" name="" value="">
-            <input type="text" name="" value="">
-            <button type="">yes</button>
+        <div id="app" class="wrap">
+            <div class="op">
+                <h1>img placeholder</h1>
+                <div class="box">
+                    <div class="item half">
+                        <label for="">Width:</label>
+                        <input type="number" v-model="width" max="2000">
+                    </div>
+                    <div class="item half">
+                        <label for="">Height:</label>
+                        <input type="number" v-model="height" max="2000">
+                    </div>
+                    <div class="item">
+                        <label for=""><input type="checkbox" v-model="random">Random</label>
+                    </div>
+                    <div class="item">
+                        <!--<button @click="refresh">Refresh</button>-->
+                    </div>
+                    <div class="item">
+                        <label for="">Out:</label>
+                        <input type="text" readonly :value="url">
+                    </div>
+                </div>
+            </div>
+            <div class="view" id="view">
+                <img :src="url">
+            </div>
         </div>
+
+        <script type="text/javascript">
+            var app = new Vue({
+                el:'#app',
+                data:{
+                    width: 300,
+                    height: null,
+                    random: false
+                },
+                methods:{
+                    refresh: function(){
+
+                    }
+                },
+                computed: {
+                    url: function(){
+                        return window.location.href + (this.random ? 'r/':'') + this.width + (this.height? 'x'+this.height:'');
+                    }
+                }
+            })
+        </script>
+
+
     </body>
 </html>
