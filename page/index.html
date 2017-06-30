@@ -49,6 +49,15 @@
                 border-radius: 2px;
                 border:1px solid #ccc;
             }
+            .refresh{
+                box-sizing: border-box;
+                background: #f3f5f7;
+                border:1px solid #ddd;
+                width: 300px;
+                border-radius: 3px;
+                padding:10px 5px;
+                cursor: pointer;
+            }
         </style>
         <script src="https://unpkg.com/vue/dist/vue.js"></script>
     </head>
@@ -58,27 +67,27 @@
                 <h1>img placeholder</h1>
                 <div class="box">
                     <div class="item half">
-                        <label for="">Width:</label>
-                        <input type="number" v-model="width" max="2000">
+                        <label for="w">Width:</label>
+                        <input type="number" v-model.number="width" max="2000">
                     </div>
                     <div class="item half">
-                        <label for="">Height:</label>
-                        <input type="number" v-model="height" max="2000">
+                        <label for="h">Height:</label>
+                        <input type="number" v-model.number="height" max="2000">
                     </div>
                     <div class="item">
-                        <label for=""><input type="checkbox" v-model="random">Random</label>
+                        <label><input type="checkbox" v-model="random">Random ( Over -50% ~ 50% )</label>
                     </div>
                     <div class="item">
-                        <!--<button @click="refresh">Refresh</button>-->
+                        <button class="refresh" @click="refresh">Refresh</button>
                     </div>
                     <div class="item">
-                        <label for="">Out:</label>
+                        <label for="o">Out:</label>
                         <input type="text" readonly :value="url">
                     </div>
                 </div>
             </div>
             <div class="view" id="view">
-                <img :src="url">
+                <img id="img" :src="url">
             </div>
         </div>
 
@@ -92,7 +101,7 @@
                 },
                 methods:{
                     refresh: function(){
-
+                        document.querySelector('#img').src = this.url+'?'+new Date().getTime();
                     }
                 },
                 computed: {
