@@ -22,7 +22,7 @@ const gm = require('gm');
 const dir = __dirname + '/img/';
 
 
-const randomImg = () => dir + 'img'+ Math.ceil(Math.random()*3)+'.jpg';
+const randomImg = () => dir + 'img'+ Math.ceil(Math.random()*9)+'.jpg';
 const randomNum = (width) => Math.ceil(Math.random()*Number(width) + Number(width)/2);
 
 
@@ -39,9 +39,9 @@ function *resetImg(num){
         inputW = num.split('x')[0];
         inputH = num.split('x')[1];
         if(Number(inputW) > Number(inputH)){
-            this.body = gm(randomImg()).resize(inputW).crop(inputW,inputH).stream();
+            this.body = gm(randomImg()).resize(inputW).crop(inputW,inputH,0,(inputW-inputH)/2).stream();
         }else {
-            this.body = gm(randomImg()).resize(null,inputH).crop(inputW,inputH).stream();
+            this.body = gm(randomImg()).resize(null,inputH).crop(inputW,inputH,(inputH-inputW)/2,0).stream();
         }
 
     }else if(/^\d+$/.test(num)){
@@ -54,11 +54,11 @@ function *resetImg(num){
 
 function *resetImgRandom(num){
     //console.log(11111)
-    this.set({
-        'Expires': 'Thu, 20 Jun 2017 02:31:31 GMT',
-        'Last-Modified': 'Thu, 20 Jun 2017 02:31:31 GMT',
-        'Cache-Control': 'no-cache'
-    });
+    //this.set({
+    //    'Expires': 'Thu, 20 Jun 2017 02:31:31 GMT',
+    //    'Last-Modified': 'Thu, 20 Jun 2017 02:31:31 GMT',
+    //    'Cache-Control': 'no-cache'
+    //});
     //if(JSON.stringify(this.query) === '{}'){
     //    this.redirect(this.url+'?'+ Date.now())
     //}
@@ -69,7 +69,19 @@ function *resetImgRandom(num){
     if(/\d[x]\d/.test(num)){
         inputW = num.split('x')[0];
         inputH = num.split('x')[1];
-        this.body = gm(randomImg()).resize(randomNum(inputW),randomNum(inputH),'!').stream();
+        let rW = randomNum(inputW),
+            rH = randomNum(inputH);
+        if(Number(inputW) > Number(inputH)){
+            this.body = gm(randomImg())
+                .resize(rW)
+                .crop(rW,rH,0,(rW-rH)/2)
+                .stream();
+        }else {
+            this.body = gm(randomImg())
+                .resize(null,rH)
+                .crop(rW,rH,(rH-rW)/2,0)
+                .stream();
+        }
     }else if(/^\d+$/.test(num)){
         this.body = gm(randomImg()).resize(randomNum(num)).stream();
     }else{
