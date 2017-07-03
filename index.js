@@ -70,16 +70,36 @@ function *resetImgRandom(num){
 
 function *drawImg(color,num){
     this.type = 'image/jpg';
-    this.body = gm(dir + 'img1.jpg')
-        .crop(1,1)
-        .background('#'+color)
-        .extent(num,num)
-        .stream();
+    let inputW,inputH;
+
+    if(/\d[x]\d/.test(num)){
+        inputW = num.split('x')[0];
+        inputH = num.split('x')[1];
+        this.body = gm(dir + 'img1.jpg')
+            .crop(1,1)
+            .background('#'+color)
+            .extent(inputW,inputH)
+            .stream();
+    }else if(/^\d+$/.test(num)){
+
+        this.body = gm(dir + 'img1.jpg')
+            .crop(1,1)
+            .background('#'+color)
+            .extent(num,num)
+            .stream();
+    }else{
+        this.throw('Must be number,like [300x200] or [500]', 404);
+    }
+
+
+
+
+
 }
 
 //router
 
 app.use(route.get('/',index));
-app.use(route.get('/d@:color/:num',drawImg));
+app.use(route.get('/@:color/:num',drawImg));
 app.use(route.get('/:num',resetImg));
 app.use(route.get('/r/:num',resetImgRandom));

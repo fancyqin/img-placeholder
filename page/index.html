@@ -4,7 +4,7 @@
         <title></title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet">
+        <!--<link href="https://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet">-->
         <style type="text/css">
             .wrap{
                 font-family: 'Exo 2',Impact,Arial, sans-serif;
@@ -67,21 +67,24 @@
                 <h1>img placeholder</h1>
                 <div class="box">
                     <div class="item half">
-                        <label for="w">Width:</label>
+                        <label>Width:</label>
                         <input type="number" v-model.number="width" max="2000">
                     </div>
                     <div class="item half">
-                        <label for="h">Height:</label>
+                        <label>Height:</label>
                         <input type="number" v-model.number="height" max="2000">
                     </div>
                     <div class="item">
-                        <label><input type="checkbox" v-model="random">Random ( Over -50% ~ 50% )</label>
+                        <label><input type="checkbox" v-model="random" @change="check('random')">Random ( Over -50% ~ 50% )</label>
+                    </div>
+                    <div class="item">
+                        <label><input type="checkbox" v-model="solidColor" @change="check('solidColor')">Solid Color IMG <input v-if="solidColor" v-model="colorVal" type="color"></label>
                     </div>
                     <div class="item">
                         <button class="refresh" @click="refresh">Refresh</button>
                     </div>
                     <div class="item">
-                        <label for="o">Out:</label>
+                        <label>Out:</label>
                         <input type="text" readonly :value="url">
                     </div>
                 </div>
@@ -97,16 +100,27 @@
                 data:{
                     width: 300,
                     height: null,
-                    random: false
+                    random: false,
+                    solidColor: false,
+                    colorVal:'#000000'
                 },
                 methods:{
                     refresh: function(){
                         document.querySelector('#img').src = this.url+'?'+new Date().getTime();
+                    },
+                    check: function(item){
+                        if(this.random && this.solidColor){
+                            (item==='random') && (this.solidColor =false);
+                            (item==='solidColor') && (this.random =false);
+                        }
                     }
                 },
                 computed: {
                     url: function(){
-                        return window.location.href + (this.random ? 'r/':'') + this.width + (this.height? 'x'+this.height:'');
+                        return window.location.href
+                                + (this.random ? 'r/':'')
+                                + (this.solidColor ? '@'+this.colorVal.split('#')[1]+'/':'')
+                                + this.width + (this.height? 'x'+this.height:'');
                     }
                 }
             })
