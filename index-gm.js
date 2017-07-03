@@ -20,7 +20,7 @@ let render = views(__dirname + '/page',{
 
 const gm = require('gm');
 const dir = __dirname + '/img/';
-const imageMagick = gm.subClass({imageMagick: true});
+
 
 const randomImg = () => dir + 'img'+ Math.ceil(Math.random()*9)+'.jpg';
 const randomNum = (width) => Math.ceil(Math.random()*Number(width) + Number(width)/2);
@@ -68,12 +68,7 @@ function *resetImgRandom(num){
     outputBySize(this,randomImg(),num,true)
 }
 
-
-
 function *drawImg(color,num){
-
-
-
     this.type = 'image/jpg';
     let inputW,inputH;
 
