@@ -17,8 +17,9 @@ let render = views(__dirname + '/page',{
     map: {html:'ejs'}
 });
 
-
+const fs = require('fs');
 const gm = require('gm');
+const Jimp = require('jimp');
 const dir = __dirname + '/img/';
 const imageMagick = gm.subClass({imageMagick: true});
 
@@ -53,13 +54,53 @@ const outputBySize = function(that,img,num,isRandom){
     }
 };
 
+const numRegx = function(num,cb1,cb2){
+    if(/\d[x]\d/.test(num)){
+        cb1();
+    }else if(/^\d+$/.test(num)){
+        cb2();
+    }
+}
+
+
 function *index(){
     let data = {};
     this.body = yield render('index',data)
 }
 
 function *resetImg(num){
-    outputBySize(this,randomImg(),num,false)
+
+
+
+
+
+    function jimpLoad(cb){
+
+        Jimp.read(randomImg()).then(function(image){
+            numRegx(num,function(){
+                image.resize(Number(num.split('x')[0]),Number(num.split('x')[1]))
+                    .quality(80)
+                    .getBuffer(Jimp.MIME_JPEG,function(err,buffer){
+                        if (err) throw err;
+                        cb(null,buffer);
+                    })
+            },function(){
+                image.resize(Number(num))
+                    .quality(80)
+                    .getBuffer(Jimp.MIME_JPEG,function(err,buffer){
+                        if (err) throw err;
+                        cb(null,buffer);
+                    })
+            })
+
+
+        }).catch(function(err){
+            console.error(err)
+        });
+    }
+
+    this.type = 'image/jpeg';
+    this.body = yield jimpLoad;
 }
 
 
@@ -70,35 +111,28 @@ function *resetImgRandom(num){
 
 
 
+
+
+
 function *drawImg(color,num){
 
-
-
-    this.type = 'image/jpg';
-    let inputW,inputH;
-
-    if(/\d[x]\d/.test(num)){
-        inputW = num.split('x')[0];
-        inputH = num.split('x')[1];
-        this.body = gm(dir + 'img1.jpg')
-            .crop(1,1)
-            .background('#'+color)
-            .extent(inputW,inputH)
-            .stream();
-    }else if(/^\d+$/.test(num)){
-
-        this.body = gm(dir + 'img1.jpg')
-            .crop(1,1)
-            .background('#'+color)
-            .extent(num,num)
-            .stream();
-    }else{
-        this.throw('Must be number,like [300x200] or [500]', 404);
+    function jimpLoad(cb){
+        Jimp.read(randomImg()).then(function(image){
+            image.resize(Number(num),Number(num))
+                .quality(80)
+                .getBuffer(Jimp.MIME_JPEG,function(err,buffer){
+                    if (err) throw err;
+                    cb(null,buffer);
+                })
+        }).catch(function(err){
+            console.error(err)
+        });
     }
 
 
+    this.type = 'image/jpeg';
 
-
+    this.body = yield jimpLoad;
 
 }
 
