@@ -26,33 +26,6 @@ const imageMagick = gm.subClass({imageMagick: true});
 const randomImg = () => dir + 'img'+ Math.ceil(Math.random()*9)+'.jpg';
 const randomNum = (width) => Math.ceil(Math.random()*Number(width) + Number(width)/2);
 
-const outputBySize = function(that,img,num,isRandom){
-    that.type =  'image/jpg';
-    let inputW,inputH;
-
-    if(/\d[x]\d/.test(num)){
-        inputW = num.split('x')[0];
-        inputH = num.split('x')[1];
-        let rW = isRandom ? randomNum(inputW):inputW,
-            rH = isRandom ? randomNum(inputH):inputH;
-        if(Number(inputW) > Number(inputH)){
-            that.body = gm(img)
-                .resize(rW)
-                .crop(rW,rH,0,(rW-rH)/2)
-                .stream();
-        }else {
-            that.body = gm(img)
-                .resize(null,rH)
-                .crop(rW,rH,(rH-rW)/2,0)
-                .stream();
-        }
-    }else if(/^\d+$/.test(num)){
-
-        that.body = gm(img).resize(isRandom? randomNum(num):num).stream();
-    }else{
-        that.throw('Must be number,like [300x200] or [500]', 404);
-    }
-};
 
 const numRegx = function(num,cb1,cb2){
     if(/\d[x]\d/.test(num)){
@@ -78,14 +51,26 @@ function *resetImg(num){
 
         Jimp.read(randomImg()).then(function(image){
             numRegx(num,function(){
-                image.resize(Number(num.split('x')[0]),Number(num.split('x')[1]))
+                let w = Number(num.split('x')[0]),
+                    h = Number(num.split('x')[1]),
+                    rW,rH;
+                if (w > h){
+                    rW = w;
+                    rH = Jimp.AUTO;
+                }else{
+                    rW = Jimp.AUTO;
+                    rH = h;
+                }
+                
+                image.resize(rW,rH)
+                    .crop(w,h)
                     .quality(80)
                     .getBuffer(Jimp.MIME_JPEG,function(err,buffer){
                         if (err) throw err;
                         cb(null,buffer);
                     })
             },function(){
-                image.resize(Number(num))
+                image.resize(Number(num),Number(num))
                     .quality(80)
                     .getBuffer(Jimp.MIME_JPEG,function(err,buffer){
                         if (err) throw err;
