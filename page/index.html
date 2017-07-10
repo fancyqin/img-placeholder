@@ -68,11 +68,11 @@
                 <div class="box">
                     <div class="item half">
                         <label>Width:</label>
-                        <input type="number" v-model.number="width" max="2000">
+                        <input type="number" v-model.number.lazy="width" max="2000">
                     </div>
                     <div class="item half">
                         <label>Height:</label>
-                        <input type="number" v-model.number="height" max="2000">
+                        <input type="number" v-model.number.lazy="height" max="2000">
                     </div>
                     <div class="item">
                         <label><input type="checkbox" v-model="random" @change="check('random')">Random ( Over -50% ~ 50% )</label>
