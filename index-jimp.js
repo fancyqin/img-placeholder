@@ -35,9 +35,6 @@ const numRegx = function(num,cb1,cb2){
     }
 };
 
-const img = function(){
-    return jimp.read(randomImg());
-};
 
 function *index(){
     let data = {};
@@ -47,7 +44,7 @@ function *index(){
 function *resetImg(num){
 
     function jimpLoad(cb){
-        img().then(function(image){
+        jimp.read(randomImg()).then(function(image){
             numRegx(num,
                 function(w,h){
                 let rW,rH,x = 0,y = 0;
