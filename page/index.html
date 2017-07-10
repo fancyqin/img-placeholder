@@ -75,10 +75,10 @@
                         <input type="number" v-model.number.lazy="height" max="2000">
                     </div>
                     <div class="item">
-                        <label><input type="checkbox" v-model="random" @change="check('random')">Random ( Over -50% ~ 50% )</label>
+                        <label><input type="checkbox" v-model="random">Random ( Over -50% ~ 50% )</label>
                     </div>
                     <div class="item">
-                        <label><input type="checkbox" v-model="solidColor" @change="check('solidColor')">Solid Color IMG <input v-if="solidColor" v-model="colorVal" type="color"></label>
+                        <label><input type="checkbox" v-model="solidColor">Solid Color IMG <input v-if="solidColor" v-model="colorVal" type="color"></label>
                     </div>
                     <div class="item">
                         <button class="refresh" @click="refresh">Refresh</button>
@@ -107,19 +107,14 @@
                 methods:{
                     refresh: function(){
                         document.querySelector('#img').src = this.url+'?'+new Date().getTime();
-                    },
-                    check: function(item){
-                        if(this.random && this.solidColor){
-                            (item==='random') && (this.solidColor =false);
-                            (item==='solidColor') && (this.random =false);
-                        }
                     }
                 },
                 computed: {
                     url: function(){
                         return window.location.href
-                                + (this.random ? 'r/':'')
-                                + (this.solidColor ? '@'+this.colorVal.split('#')[1]+'/':'')
+                                + (this.random ? 'r':'')
+                                + (this.solidColor ? '@'+this.colorVal.split('#')[1]:'')
+                                + ((!this.random && !this.solidColor) ? '':'/')
                                 + this.width + (this.height? 'x'+this.height:'');
                     }
                 }

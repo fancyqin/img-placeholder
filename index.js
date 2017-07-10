@@ -121,6 +121,7 @@ function *resetImgRandom(num){
         });
     }
 
+
     this.type = 'image/jpeg';
     this.body = yield jimpLoad;
 
@@ -130,14 +131,9 @@ function *resetImgRandom(num){
 
 
 
-
 function *drawImg(color,num){
 
-
-
-
     function jimpLoad(cb){
-
 
         let colorNum = Number('0x'+color+'FF');
 
@@ -146,7 +142,7 @@ function *drawImg(color,num){
             function(w,h){
                 new jimp(w,h,colorNum,function(err,image){
                     jimp.loadFont(fontPath).then(function(font){
-                        image.print(font,w/2-32,h/2-8,w+'x'+h,w).getBuffer(jimp.MIME_JPEG,function(err,buffer){
+                        image.print(font,w/2-28,h/2-8,w+'x'+h,w).getBuffer(jimp.MIME_JPEG,function(err,buffer){
                             if (err) throw err;
                             cb(null,buffer);
                         })
@@ -156,7 +152,7 @@ function *drawImg(color,num){
             function(){
                 new jimp(num-0, num-0, colorNum, function (err, image) {
                     jimp.loadFont(fontPath).then(function(font){
-                        image.print(font,num/2-32,num/2-8,num+'x'+num,num-0).getBuffer(jimp.MIME_JPEG,function(err,buffer){
+                        image.print(font,num/2-28,num/2-8,num+'x'+num,num-0).getBuffer(jimp.MIME_JPEG,function(err,buffer){
                             if (err) throw err;
                             cb(null,buffer);
                         })
@@ -172,9 +168,55 @@ function *drawImg(color,num){
 
 }
 
+function *drawImgRandom(color,num){
+
+    function jimpLoad(cb){
+
+        let colorNum = Number('0x'+color+'FF');
+
+        let fontPath = colorNum > Number('0x'+808080+'FF') ?  jimp.FONT_SANS_16_BLACK: jimp.FONT_SANS_16_WHITE;
+        numRegx(num,
+            function(w,h){
+                w = randomNum(w);
+                h = randomNum(h);
+                new jimp(w,h,colorNum,function(err,image){
+                    jimp.loadFont(fontPath).then(function(font){
+                        image.print(font,w/2-28,h/2-8,w+'x'+h,w).getBuffer(jimp.MIME_JPEG,function(err,buffer){
+                            if (err) throw err;
+                            cb(null,buffer);
+                        })
+                    })
+                })
+            },
+            function(){
+                let w = randomNum(num);
+                let h = randomNum(num);
+                new jimp(w,h,colorNum,function(err,image){
+                    jimp.loadFont(fontPath).then(function(font){
+                        image.print(font,w/2-28,h/2-8,w+'x'+h,w).getBuffer(jimp.MIME_JPEG,function(err,buffer){
+                            if (err) throw err;
+                            cb(null,buffer);
+                        })
+                    })
+                })
+            }
+        );
+
+    }
+
+    this.type = 'image/jpeg';
+    this.body = yield jimpLoad;
+
+}
+
+
+
+
 //router
 
 app.use(route.get('/',index));
+app.use(route.get('/r@:color/:num',drawImgRandom));
 app.use(route.get('/@:color/:num',drawImg));
 app.use(route.get('/:num',resetImg));
 app.use(route.get('/r/:num',resetImgRandom));
+
