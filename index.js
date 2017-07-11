@@ -3,13 +3,11 @@ const logger = require('koa-logger');
 const route = require('koa-route');
 const views = require('co-views');
 const serve = require('koa-static');
-
+const _ = require('lodash');
 const app = koa();
 app.use(logger());
 
 app.listen(2333);
-
-console.log('listening 2333');
 
 app.use(serve(__dirname +'/src'));
 
@@ -17,13 +15,14 @@ let render = views(__dirname + '/page',{
     map: {html:'ejs'}
 });
 
+
+
 const fs = require('fs');
-const gm = require('gm');
 const jimp = require('jimp');
 const dir = __dirname + '/img/';
-const imageMagick = gm.subClass({imageMagick: true});
+const imgNums = 9;
+let court = 0;
 
-const randomImg = () => dir + 'img'+ Math.ceil(Math.random()*9)+'.jpg';
 const randomNum = (width) => Math.ceil(Math.random()*Number(width) + Number(width)/2);
 
 const numRegx = function(num,cb1,cb2){
@@ -35,8 +34,45 @@ const numRegx = function(num,cb1,cb2){
     }
 };
 
+let imgRoaded = [];
+
+
+
+//for (let i = 1;i<imgNums+1;i++){
+//    //jimp.read(dir+'img'+i+'.jpg').then(function(image){
+//    //    imgRoaded.push(image);
+//    //    court ++;
+//    //    if(court === imgNums){
+//    //        console.log('listening 2333,load img over');
+//    //    }
+//    //
+//    //}).catch(function(err){
+//    //    console.error(err)
+//    //});
+//    imgRoaded.push(jimp.read(dir+'img'+i+'.jpg'));
+//}
+
+
+
+for ( let i = 1; i< imgNums+1; i++ ){
+    jimp.read(dir+'img'+i+'.jpg').then(function(image){
+        imgRoaded.push(image);
+        court++;
+        console.log(image);
+        if (court === imgNums){
+            console.log('done')
+        }
+    }).catch(function(err){console.error(err)})
+}
+
+
+
+
+
+
+
 const img = function(){
-    return jimp.read(randomImg());
+    return imgRoaded[Math.ceil(Math.random()*(imgNums-1))]
 };
 
 function *index(){
@@ -45,9 +81,15 @@ function *index(){
 }
 
 function *resetImg(num){
+    //var imgg = _.cloneDeep(image);
 
     function jimpLoad(cb){
-        img().then(function(image){
+
+        //jimp.read(img()).then(function(image){
+            let image = img();
+            let oldImage = _.cloneDeep(image);
+            //let oldImage = Object.assign({},image);
+
             numRegx(num,
                 function(w,h){
                 let rW,rH,x = 0,y = 0;
@@ -60,24 +102,24 @@ function *resetImg(num){
                     rH = h;
                     x = (h - w)/2;
                 }
-                image.resize(rW,rH)
+                    image.resize(rW,rH)
                     .crop(x,y,w,h)
                     .getBuffer(jimp.MIME_JPEG,function(err,buffer){
                         if (err) throw err;
                         cb(null,buffer);
+                        image = oldImage;
                     })
             },
                 function(){
-                image.resize(Number(num),Number(num))
+                    image.resize(Number(num),Number(num))
                     .getBuffer(jimp.MIME_JPEG,function(err,buffer){
                         if (err) throw err;
                         cb(null,buffer);
+                        image = oldImage;
                     })
             }
             )
-        }).catch(function(err){
-            console.error(err)
-        });
+        //}).catch(function(err){})
     }
 
     this.type = 'image/jpeg';
@@ -88,40 +130,36 @@ function *resetImg(num){
 function *resetImgRandom(num){
 
     function jimpLoad(cb){
-        jimp.read(randomImg()).then(function(image){
-            numRegx(num,
-                function(w,h){
-                    w = randomNum(w);
-                    h = randomNum(h);
-                    let rW,rH,x = 0,y = 0;
-                    if (w > h){
-                        rW = w;
-                        rH = jimp.AUTO;
-                        y = (w - h)/2;
-                    }else{
-                        rW = jimp.AUTO;
-                        rH = h;
-                        x = (h - w)/2;
-                    }
-
-                    image.resize(rW,rH)
-                        .crop(x,y,w,h)
-                        .getBuffer(jimp.MIME_JPEG,function(err,buffer){
-                            if (err) throw err;
-                            cb(null,buffer);
-                        })
-                },
-                function(){
-                    image.resize(randomNum(num),randomNum(num))
-                        .getBuffer(jimp.MIME_JPEG,function(err,buffer){
-                            if (err) throw err;
-                            cb(null,buffer);
-                        })
+        numRegx(num,
+            function(w,h){
+                w = randomNum(w);
+                h = randomNum(h);
+                let rW,rH,x = 0,y = 0;
+                if (w > h){
+                    rW = w;
+                    rH = jimp.AUTO;
+                    y = (w - h)/2;
+                }else{
+                    rW = jimp.AUTO;
+                    rH = h;
+                    x = (h - w)/2;
                 }
-            )
-        }).catch(function(err){
-            console.error(err)
-        });
+
+                img().resize(rW,rH)
+                    .crop(x,y,w,h)
+                    .getBuffer(jimp.MIME_JPEG,function(err,buffer){
+                        if (err) throw err;
+                        cb(null,buffer);
+                    })
+            },
+            function(){
+                img().resize(randomNum(num),randomNum(num))
+                    .getBuffer(jimp.MIME_JPEG,function(err,buffer){
+                        if (err) throw err;
+                        cb(null,buffer);
+                    })
+            }
+        )
     }
 
 
@@ -129,9 +167,6 @@ function *resetImgRandom(num){
     this.body = yield jimpLoad;
 
 }
-
-
-
 
 
 function *drawImg(color,num){
@@ -211,7 +246,6 @@ function *drawImgRandom(color,num){
     this.body = yield jimpLoad;
 
 }
-
 
 
 
