@@ -58,21 +58,18 @@ for ( let i = 1; i< imgNums+1; i++ ){
     jimp.read(dir+'img'+i+'.jpg').then(function(image){
         imgRoaded.push(image);
         court++;
-        console.log(image);
+        console.log('image'+i+' loaded...');
         if (court === imgNums){
-            console.log('done')
+            console.log('All image loaded over!')
         }
     }).catch(function(err){console.error(err)})
 }
 
 
 
-
-
-
-
 const img = function(){
-    return imgRoaded[Math.ceil(Math.random()*(imgNums-1))]
+    let imgR = _.cloneDeep(imgRoaded[Math.ceil(Math.random()*(imgNums-1))])
+    return imgR;
 };
 
 function *index(){
@@ -87,7 +84,7 @@ function *resetImg(num){
 
         //jimp.read(img()).then(function(image){
             let image = img();
-            let oldImage = _.cloneDeep(image);
+            // let oldImage = _.cloneDeep(image);
             //let oldImage = Object.assign({},image);
 
             numRegx(num,
@@ -107,7 +104,7 @@ function *resetImg(num){
                     .getBuffer(jimp.MIME_JPEG,function(err,buffer){
                         if (err) throw err;
                         cb(null,buffer);
-                        image = oldImage;
+                        // image = _.cloneDeep(oldImage);
                     })
             },
                 function(){
@@ -115,7 +112,7 @@ function *resetImg(num){
                     .getBuffer(jimp.MIME_JPEG,function(err,buffer){
                         if (err) throw err;
                         cb(null,buffer);
-                        image = oldImage;
+                        // image = _.cloneDeep(oldImage);
                     })
             }
             )
@@ -130,6 +127,7 @@ function *resetImg(num){
 function *resetImgRandom(num){
 
     function jimpLoad(cb){
+        let image = img();
         numRegx(num,
             function(w,h){
                 w = randomNum(w);
@@ -145,7 +143,7 @@ function *resetImgRandom(num){
                     x = (h - w)/2;
                 }
 
-                img().resize(rW,rH)
+                image.resize(rW,rH)
                     .crop(x,y,w,h)
                     .getBuffer(jimp.MIME_JPEG,function(err,buffer){
                         if (err) throw err;
@@ -153,7 +151,21 @@ function *resetImgRandom(num){
                     })
             },
             function(){
-                img().resize(randomNum(num),randomNum(num))
+                let w = randomNum(num);
+                let h = randomNum(num);
+                let rW,rH,x = 0,y = 0;
+                if (w > h){
+                    rW = w;
+                    rH = jimp.AUTO;
+                    y = (w - h)/2;
+                }else{
+                    rW = jimp.AUTO;
+                    rH = h;
+                    x = (h - w)/2;
+                }
+
+                image.resize(rW,rH)
+                    .crop(x,y,w,h)
                     .getBuffer(jimp.MIME_JPEG,function(err,buffer){
                         if (err) throw err;
                         cb(null,buffer);
