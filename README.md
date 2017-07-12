@@ -3,7 +3,7 @@
 
 ## Build Setup
 
-First download and install [GraphicsMagick](//www.graphicsmagick.org/) or [ImageMagick](//www.imagemagick.org/).
+<!--First download and install [GraphicsMagick](//www.graphicsmagick.org/) or [ImageMagick](//www.imagemagick.org/).-->
 
 ``` bash
 
