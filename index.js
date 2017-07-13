@@ -27,7 +27,6 @@ const randomNum = (width) => Math.ceil(Math.random()*Number(width) + Number(widt
 
 const numRegx = function(num,cb1,cb2){
     if(/\d[x]\d/.test(num)){
-
         cb1(Number(num.split('x')[0]),Number(num.split('x')[1]));
     }else if(/^\d+$/.test(num)){
         cb2();
@@ -35,24 +34,6 @@ const numRegx = function(num,cb1,cb2){
 };
 
 let imgRoaded = [];
-
-
-
-//for (let i = 1;i<imgNums+1;i++){
-//    //jimp.read(dir+'img'+i+'.jpg').then(function(image){
-//    //    imgRoaded.push(image);
-//    //    court ++;
-//    //    if(court === imgNums){
-//    //        console.log('listening 2333,load img over');
-//    //    }
-//    //
-//    //}).catch(function(err){
-//    //    console.error(err)
-//    //});
-//    imgRoaded.push(jimp.read(dir+'img'+i+'.jpg'));
-//}
-
-
 
 for ( let i = 1; i< imgNums+1; i++ ){
     jimp.read(dir+'img'+i+'.jpg').then(function(image){
@@ -65,12 +46,7 @@ for ( let i = 1; i< imgNums+1; i++ ){
     }).catch(function(err){console.error(err)})
 }
 
-
-
-const imgRandom = function(){
-    let imgR = _.cloneDeep(imgRoaded[Math.ceil(Math.random()*(imgNums-1))])
-    return imgR;
-};
+const imgRandom = () => _.cloneDeep(imgRoaded[Math.ceil(Math.random()*(imgNums-1))]);
 
 function *index(){
     let data = {};
@@ -97,27 +73,19 @@ function imgResizeCrop(w,h,image,cb){
 }
 
 function *resetImg(num){
-    //var imgg = _.cloneDeep(image);
 
     function jimpLoad(cb){
+        let image = imgRandom();
 
-        //jimp.read(imgRandom()).then(function(image){
-            let image = imgRandom();
-            // let oldImage = _.cloneDeep(image);
-            //let oldImage = Object.assign({},image);
-
-            numRegx(num,function(w,h){
-                imgResizeCrop(w,h,image,cb);
-            },function(){
-                image.resize(Number(num),Number(num))
-                .getBuffer(jimp.MIME_JPEG,function(err,buffer){
-                    if (err) throw err;
-                    cb(null,buffer);
-                    // image = _.cloneDeep(oldImage);
-                })
-            }
-            )
-        //}).catch(function(err){})
+        numRegx(num,function(w,h){
+            imgResizeCrop(w,h,image,cb);
+        },function(){
+            image.resize(Number(num),Number(num))
+            .getBuffer(jimp.MIME_JPEG,function(err,buffer){
+                if (err) throw err;
+                cb(null,buffer);
+            })
+        })
     }
 
     this.type = 'image/jpeg';
@@ -128,17 +96,8 @@ function *resetImg(num){
 function *resetImgRandom(num){
     function jimpLoad(cb){
         let image = imgRandom();
-        numRegx(num,
-            function(w,h){
-                w = randomNum(w);
-                h = randomNum(h);
-                imgResizeCrop(w,h,image,cb);
-            },
-            function(){
-                let w = randomNum(num);
-                let h = randomNum(num);
-                imgResizeCrop(w,h,image,cb);
-            }
+        numRegx(num,(w,h) => imgResizeCrop(randomNum(w),randomNum(h),image,cb),
+            () => imgResizeCrop(randomNum(num),randomNum(num),image,cb)
         )
     }
     this.type = 'image/jpeg';
@@ -161,13 +120,8 @@ function *drawImg(color,num){
 
     function jimpLoad(cb){
         let colorNum = Number('0x'+color+'FF');
-        numRegx(num,
-            function(w,h){
-                drawSolidColorImg(w,h,colorNum,cb);
-            },
-            function(){
-                drawSolidColorImg(num-0,num-0,colorNum,cb);
-            }
+        numRegx(num,(w,h) => drawSolidColorImg(w,h,colorNum,cb),
+            () => drawSolidColorImg(num-0,num-0,colorNum,cb)
         );
     }
 
@@ -180,15 +134,9 @@ function *drawImgRandom(color,num){
 
     function jimpLoad(cb){
         let colorNum = Number('0x'+color+'FF');
-        numRegx(num,
-            function(w,h){
-                drawSolidColorImg(randomNum(w),randomNum(h),colorNum,cb);
-            },
-            function(){
-                drawSolidColorImg(randomNum(num),randomNum(num),colorNum,cb);
-            }
-        );
-
+        numRegx(num,(w,h) => drawSolidColorImg(randomNum(w),randomNum(h),colorNum,cb),
+            () => drawSolidColorImg(randomNum(num),randomNum(num),colorNum,cb)
+        )
     }
 
     this.type = 'image/jpeg';
