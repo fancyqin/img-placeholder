@@ -1,7 +1,7 @@
-# img-placeholer
-> img placeholer 
+# img-placeholder
+> img placeholder 
 
-## Build Setup
+## Build
 
 <!--First download and install [GraphicsMagick](//www.graphicsmagick.org/) or [ImageMagick](//www.imagemagick.org/).-->
 

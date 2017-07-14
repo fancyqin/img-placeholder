@@ -20,7 +20,7 @@ let render = views(__dirname + '/page',{
 const fs = require('fs');
 const jimp = require('jimp');
 const dir = __dirname + '/img/';
-const imgNums = 9;
+const imgNums = 6;
 let court = 0;
 
 const randomNum = (width) => Math.ceil(Math.random()*Number(width) + Number(width)/2);
