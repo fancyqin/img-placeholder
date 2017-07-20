@@ -11,7 +11,7 @@ app.listen(2333);
 
 app.use(serve(__dirname +'/src'));
 
-let render = views(__dirname + '/page',{
+const render = views(__dirname + '/page',{
     map: {html:'ejs'}
 });
 
